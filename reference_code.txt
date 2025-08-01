@@ -1,0 +1,80 @@
+import random
+
+class Node:
+    def __init__(self, game_state, parent=None):
+        self.game_state = game_state
+        self.parent = parent
+        self.children = []
+        self.wins = 0
+        self.visits = 0
+        self.untried_actions = self.game_state.get_legal_actions()
+    
+    def UCB1(self, total_visits, c_param=1.41):
+        if self.visits == 0:
+            return float('inf')  # to ensure unvisited nodes are prioritized
+        return self.wins / self.visits + c_param * (np.log(total_visits) / self.visits) ** 0.5
+
+    def select_child(self):
+        # Select a child node with highest UCB1 score
+        return max(self.children, key=lambda x: x.UCB1(self.visits))
+
+    def add_child(self, action, game_state):
+        # Remove the action from untried and create a new child node for this action
+        self.untried_actions.remove(action)
+        child_node = Node(game_state=game_state, parent=self)
+        self.children.append(child_node)
+        return child_node
+
+    def update(self, result):
+        # Update this node - increment the visit count and update the win count based on the result
+        self.visits += 1
+        self.wins += result
+
+def MCTS(root, iterations=1000):
+    for _ in range(iterations):
+        node = root
+        # Selection
+        while node.untried_actions == [] and node.children != []:
+            node = node.select_child()
+        
+        # Expansion
+        if node.untried_actions != []:
+            action = random.choice(node.untried_actions)
+            next_state = node.game_state.next_state(action)
+            node = node.add_child(action, next_state)
+        
+        # Simulation
+        current_state = node.game_state
+        while not current_state.is_game_over():
+            possible_moves = current_state.get_legal_actions()
+            action = random.choice(possible_moves)
+            current_state = current_state.next_state(action)
+        
+        # Backpropagation
+        while node is not None:
+            node.update(current_state.game_result(node.game_state.player))  # Assuming game_result returns a result relative to player
+            node = node.parent
+
+# This is a placeholder for your game state class
+class GameState:
+    def get_legal_actions(self):
+        # Return a list of all legal actions from this state
+        pass
+    
+    def next_state(self, action):
+        # Return the new GameState after applying the action
+        pass
+    
+    def is_game_over(self):
+        # Return True if the game is over, False otherwise
+        pass
+    
+    def game_result(self, player):
+        # Return the game result from the perspective of the given player
+        pass
+
+# Example usage
+# You would need to implement GameState specific to your game for this to work
+# root_state = GameState(initial_configuration)
+# root_node = Node(game_state=root_state)
+# MCTS(root_node)
