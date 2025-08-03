@@ -7,21 +7,30 @@ class Board() # also used as State
     def __init__(self, init_loc = [[(2,2),(5,5)],[(2,5),(5,2)]]):
         self.width = 7
         self.height = 7
-        self.players = 2
+        self.players = 2 #player1 -> 0, player2 -> 1
         self.peices = 2
-        self.peice_loc = init_loc # self.peice_loc[0][1] is location of first player's second peice
+        self.peices_loc = init_loc # self.peices_loc[0][1] is location of first player's second peice
         self.hor_wall_loc = [[0 for _ in range(self.width)] for _ in range(self.height-1)]
         self.vert_wall_loc = [[0 for _ in range(self.width-1)] for _ in range(self.height)]
     
-    def is_game_end(self):
+    def game_end(self):
         self.result = [[-1 for _ in range(self.width)] for _ in range(self.height)]
         self.game_ended = True
         for player in range(self.players):
-            for peice in range(self.peices):
-                self.dfs(peice_loc[player][peice], player)
+            for peice_loc in peices_loc[player]:
+                self.dfs(peice_loc, player)
+        
+        self.score = [0 for _ in range(self.players)]
+        for player in range(self.players):
+            for i in range(self.height):
+                for j in range(self.width):
+                    if self.result[i][j] == player:
+                        self.score[player] += 1
+        
+        return self.game_ended, self.score
 
-    def dfs(self, peice, player):
-        peice_r, peice_c = peice
+    def dfs(self, peice_loc, player):
+        peice_r, peice_c = peice_loc
         if(self.result[peice_r][peice_c] == player)
             return
         elif(self.result[peice_r][peice_c] != -1)
@@ -31,11 +40,11 @@ class Board() # also used as State
         dirs = [(0,1),(1,0),(0,-1),(-1,0)]
         for direction in dirs:
             dr, dc = direction
-            if self.valid(peice, direction):
+            if self.valid(peice_loc, direction):
                 dfs((peice_r+dr, peice_c+dc), player)
 
-    def valid(self, peice, direction):
-        peice_r, peice_c = peice
+    def valid(self, peice_loc, direction):
+        peice_r, peice_c = peice_loc
         dr, dc = direction
         if peice_r < 0  or peice_r > self.height:
             return False
@@ -51,4 +60,13 @@ class Board() # also used as State
             return False
         return True
 
-    def 
+    def place_hor_wall(self, wall_loc):
+        wall_loc_r, wall_loc_c = wall_loc
+        hor_wall_loc[wall_loc_r][wall_loc_c] = 1
+    
+    def place_vert_wall(self, wall_loc):
+        wall_loc_r, wall_loc_c = wall_loc
+        vert_wall_loc[wall_loc_r][wall_loc_c] = 1
+    
+    def move_piece(self, player, peice, peice_loc)
+        
