@@ -1,9 +1,7 @@
 from Board import *
 class Wall_Baduk():
-    def __init__(size, players):
-        self.board = Board(size)
-        self.players = players
-        self.turn = 1
+    def __init__(size):
+        self.board = Board()
     
     def next_turn(self):
         self.turn++
@@ -34,5 +32,6 @@ class Wall_Baduk():
         self.select_starting_position()
         self.run()
 
-baduk = Wall_Baduk()
-baduk.start()
+if __name__ == '__main__':
+    baduk = Wall_Baduk()
+    baduk.start()
